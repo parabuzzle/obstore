@@ -1,0 +1,3 @@
+--color
+--require rspec/legacy_formatters
+--require spec_helper

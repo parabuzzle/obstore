@@ -1,0 +1,29 @@
+# Ruby stuff
+*.gem
+*.rbc
+Gemfile.lock
+*.lock
+.bundle
+.config
+coverage
+InstalledFiles
+lib/bundler/man
+rdoc
+spec/reports
+test/tmp
+test/version_tmp
+tmp
+*.log
+*.out
+
+# YARD artifacts
+.yardoc
+_yardoc
+doc/
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+.DS_Store
+.idea
+spec_results.xml
