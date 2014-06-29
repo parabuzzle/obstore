@@ -9,7 +9,7 @@ task :coverage do
 end
 
 # Run the tests and build a test package by default
-task :default => ['gem:install']
+task :default => ['clean','spec','gem:build']
 
 task :test => [:clean, :spec] do
   sh 'bundle exec rspec --format RspecJunitFormatter  --out ./spec_results.xml'

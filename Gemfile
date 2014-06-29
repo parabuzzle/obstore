@@ -1,7 +1,5 @@
 source 'https://rubygems.org'
 
-ruby "2.1.2"
-
 group :test, :development do
   gem 'rspec', '~>3.0'
   gem 'guard'
@@ -12,4 +10,5 @@ group :test, :development do
   gem 'simplecov-rcov'
   gem 'rspec_junit_formatter'
   gem 'rspec-legacy_formatters'
+  gem 'coveralls', require: false
 end

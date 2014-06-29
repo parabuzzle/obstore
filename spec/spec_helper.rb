@@ -1,6 +1,7 @@
 # This file is loaded before rspec tests are run
 require 'simplecov'
 require 'simplecov-rcov'
+require 'coveralls'
 
 SimpleCov.start do
   add_filter '/spec/'
@@ -11,3 +12,5 @@ SimpleCov.start do
       SimpleCov::Formatter::RcovFormatter
   ]
 end if ENV["COVERAGE"]
+
+Coveralls.wear!
