@@ -73,6 +73,11 @@ ObStore can remove all expired data at once (run this in a cronjob?)
  * send a pull request
  * have a beer
 
+# TODO
+ * Redis Support in Place of FileStore as a choice
+ * Abstract Storage Provider
+ * Make the code less clever...
+
 # License
 The MIT License (MIT)
 
