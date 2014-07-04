@@ -60,7 +60,7 @@ custom   = @obstore.fetch :custom     #=> MyCustomObject
 
 ## More Advanced Concepts
 
-### Obstore allows you to use dot syntaxing to retreive data
+### Obstore allows you to use dot syntaxing
 sort of like the way ActiveRecord works
 ```
 @obstore.metrics.fetch  #=> {:stat1=>123, :stat2=>456}
@@ -87,7 +87,7 @@ metrics = @obstore.metrics
 metrics.extra  #=> "foo"
 metrics.more = "more metadata"
 metrics.more   #=> "more metadata"
-# don't forget to store you changes
+# don't forget to store your changes
 @obstore.metrics = metrics
 ```
 

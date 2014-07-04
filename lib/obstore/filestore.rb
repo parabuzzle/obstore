@@ -33,6 +33,7 @@ module ObStore
       return true
     end
 
+    # stores data to pstore db
     def store(key, value, opts={})
       if key.class != Symbol
         raise TypeError "key must be of type symbol"
@@ -40,6 +41,7 @@ module ObStore
       store_data_by_key key, value, opts
     end
 
+    # fetches saved object for the given key
     def fetch(key)
       if key.class != Symbol
         raise TypeError "key must be of type symbol"
@@ -52,16 +54,19 @@ module ObStore
       end
     end
 
+    # lists all the keys that are currently in the DBs
     def keys
       @_store.transaction do
         @_store.roots
       end
     end
 
+    # returns boolean if atomic writes is active
     def atomic_writes
       @_store.ultra_safe
     end
 
+    # sets atomic writes
     def atomic_writes=(bool)
       @_store.ultra_safe = bool
     end

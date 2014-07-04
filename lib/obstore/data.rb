@@ -14,13 +14,11 @@ module ObStore
     include ObStore::Lockable
 
     attr_accessor :expiry
-    attr_reader :updated, :data, :_store, :_key
+    attr_reader :updated, :data
 
     def initialize(data=nil, options={})
       @expiry = options[:expiry] # in seconds
       @data = {}
-      @_store = options[:store]
-      @_key = options[:key]
       store_data_by_key :data, data
       @updated = Time.now
       if options[:metadata]
