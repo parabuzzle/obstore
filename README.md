@@ -5,7 +5,7 @@ ObStore
 
 ObStore is a smart persistent Object store.
 
-ObStore allows you to save any object to a file along with metadata about that object. You can also set an expiry for an object and ObStore will lazily delete the data for you.
+ObStore allows you to save any object to a persistent storage system (such as a file) along with metadata about that object that you can recall later using a different process or thread. You can also set an expiry for an object and ObStore will lazily delete the data for you.
 
 # Installation
 
@@ -27,37 +27,68 @@ gem install obstore
 # Usage
 Using ObStore is simple.
 
-### Basic Usage
+## Basic Usage
 You can use ObStore to save objects to a local file for use later or by other apps
+
+### Create a storage object
+
 ```
 require 'obstore'
 
 # Create an obstore object
-@obstore = ObStore::FileStore.new('./obstore.db')
+@obstore = ObStore::FileStore.new './obstore.db'
 
-# save any object you want to persist using dot syntaxing
-@obstore.metrics = {:stat1=>123, :stat2=>456}
-@obstore.anything = "can be set to anything"
+# If your system supports atomic writes, you can (and should) turn that on
+@obstore.atomic_writes = true
+
+# Or alternatively when you create the obstore object
+ObStore::FileStore.new './obstore.db', :atomic_writes=>true
+```
+### Save and Retrieve objects
+```
+# save any object you want to persist using the save method
+# -> note: the key must be a symbol or you will receive a TypeError
+@obstore.store :metrics,  {:stat1=>123, :stat2=>456}     # pass it a key and a value
+@obstore.store :anything, "can be any object you like"   # the key can be as simple as a string
+@obstore.store :custom,   MyCustomObject                 # the key can even be an instance of an object
 
 # retrieve the object
-metrics = @obstore.metrics.data     #=> {:stat1=>123, :stat2=>456}
-anything = @obstore.anything.fetch  #=> "can be set to anything"
+metrics  = @obstore.fetch :metrics    #=> {:stat1=>123, :stat2=>456}
+anything = @obstore.fetch :anything   #=> "can be any object you like"
+custom   = @obstore.fetch :custom     #=> MyCustomObject
+```
+
+## More Advanced Concepts
+
+### Obstore allows you to use dot syntaxing to retreive data
+sort of like the way ActiveRecord works
+```
+@obstore.metrics.fetch  #=> {:stat1=>123, :stat2=>456}
+
+# note - without calling fetch, you will get the underlying ObStore::Data object
+@obstore.metrics        #=> ObStore::Data
 ```
 
 ### Keys that Expire
 ObStore will check if your data is expired and clean the db on fetch for you (lazy expiry)
 ```
-@obstore.metrics = {:stat1=>123, :stat2=>456}, {:expiry=>10} #expiry is seconds
-@obstore.metrics.data #=> {:stat1=>123, :stat2=>456}
+@obstore.store :metrics, {:stat1=>123, :stat2=>456}, {:expiry=>10} #expiry is seconds
+@obstore.fetch :metrics  #=> {:stat1=>123, :stat2=>456}
 sleep 11
-@obstore.metrics #=> nil
+@obstore.fetch :metrics #=> nil
 ```
 
 ### Metadata for your object (dimensions)
-ObStore supports adding as much metadata as you like about the object you are saving
+ObStore supports adding as much metadata as you like about the object you are saving.
+That data saved to the ObStore::Data object when saved to the ObStore db
 ```
-@obstore.metrics = {:stat1=>123, :stat2=>456}, {:expiry=>10, :metadata=>{:extra=>"foo"}}
-@obstore.metrics.extra #=> "foo"
+@obstore.store :metrics, {:stat1=>123, :stat2=>456}, {:expiry=>10, :metadata=>{:extra=>"foo"}}
+metrics = @obstore.metrics
+metrics.extra  #=> "foo"
+metrics.more = "more metadata"
+metrics.more   #=> "more metadata"
+# don't forget to store you changes
+@obstore.metrics = metrics
 ```
 
 ### Clean all Expired keys

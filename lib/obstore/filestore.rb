@@ -11,26 +11,59 @@ require 'obstore/data'
 module ObStore
   class FileStore
 
-    attr_accessor :store
+    attr_accessor :_store
 
     def initialize(opts={})
       opts[:database] ||= "./tmp/obstore.db"
       opts[:threadsafe] ||= true
       opts[:atomic_writes] ||= false
-      @store = PStore.new(opts[:database], opts[:threadsafe])
-      @store.ultra_safe = opts[:atomic_writes]
+      @_store = PStore.new(opts[:database], opts[:threadsafe])
+      @_store.ultra_safe = opts[:atomic_writes]
     end
 
     # removes stale records from the pstore db
     def compact!
       keys = []
-      @store.transaction do
-        keys = @store.roots
+      @_store.transaction do
+        keys = @_store.roots
       end
       keys.each do |key|
         fetch_data_by_key key.to_sym # just fetching the stale items deletes them
       end
       return true
+    end
+
+    def store(key, value, opts={})
+      if key.class != Symbol
+        raise TypeError "key must be of type symbol"
+      end
+      store_data_by_key key, value, opts
+    end
+
+    def fetch(key)
+      if key.class != Symbol
+        raise TypeError "key must be of type symbol"
+      end
+      data = fetch_data_by_key(key)
+      if data.nil?
+        return nil
+      else
+        return data.fetch
+      end
+    end
+
+    def keys
+      @_store.transaction do
+        @_store.roots
+      end
+    end
+
+    def atomic_writes
+      @_store.ultra_safe
+    end
+
+    def atomic_writes=(bool)
+      @_store.ultra_safe = bool
     end
 
     private
@@ -42,11 +75,14 @@ module ObStore
 
     # un-marshals the passed string into an object
     def unmarshal(str)
+      if str.nil?
+        return nil
+      end
       YAML.load str
     end
 
-    # method used by method_missing to store data
-    def store_data_by_key(key, args)
+    # internal method used for storing data by key
+    def store_data_by_key(key, *args)
       options = {}
       if args.class == Array
         value = args.shift
@@ -54,24 +90,38 @@ module ObStore
       else
         value = args
       end
-      @store.transaction do
-        if value.nil?
-          @store.delete key.to_sym
+      @_store.transaction do
+        if value.class == ObStore::Data
+          @_store[key.to_sym] = marshal value
+        elsif value.nil?
+          @_store.delete key.to_sym
         else
-          @store[key.to_sym] = marshal ObStore::Data.new(value, options)
+          @_store[key.to_sym] = marshal ObStore::Data.new(value, options)
         end
-        @store.commit
+        @_store.commit
       end
+    end
+
+    def store_obj_by_key(key, args)
+      if args.class != ObStore::Data
+        unless args.class == NilClass
+          raise TypeError "data must be of type ObStore::Data"
+        end
+      end
+      store_data_by_key key, args
     end
 
     # method used by method_missing to fetch data
     def fetch_data_by_key(key)
-      @store.transaction do
-        data = unmarshal(@store[key.to_sym])
+      @_store.transaction do
+        data = unmarshal(@_store[key.to_sym])
+        if data.nil?
+          return data
+        end
         if data.stale?
           data = nil
-          @store.delete key.to_sym
-          @store.commit
+          @_store.delete key.to_sym
+          @_store.commit
         end
         return data
       end
@@ -79,7 +129,7 @@ module ObStore
 
     def method_missing(meth, *args, &block)
       if meth.to_s =~ /^(.+)=$/
-        store_data_by_key($1, *args)
+        store_obj_by_key($1, *args)
       elsif meth.to_s =~ /^(.+)$/
         fetch_data_by_key($1)
       else
