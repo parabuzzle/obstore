@@ -38,7 +38,7 @@
 
 <p>ObStore is a smart persistent Object store.</p>
 
-<p>ObStore allows you to save any object to a file along with metadata about that object. You can also set an expiry for an object and ObStore will lazily delete the data for you.</p>
+<p>ObStore allows you to save any object to a persistent storage system (such as a file) along with metadata about that object that you can recall later using a different process or thread. You can also set an expiry for an object and ObStore will lazily delete the data for you.</p>
 
 <h1>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
@@ -63,23 +63,53 @@
 
 <p>Using ObStore is simple.</p>
 
-<h3>
-<a name="basic-usage" class="anchor" href="#basic-usage"><span class="octicon octicon-link"></span></a>Basic Usage</h3>
+<h2>
+<a name="basic-usage" class="anchor" href="#basic-usage"><span class="octicon octicon-link"></span></a>Basic Usage</h2>
 
 <p>You can use ObStore to save objects to a local file for use later or by other apps</p>
+
+<h3>
+<a name="create-a-storage-object" class="anchor" href="#create-a-storage-object"><span class="octicon octicon-link"></span></a>Create a storage object</h3>
 
 <pre><code>require 'obstore'
 
 # Create an obstore object
-@obstore = ObStore::FileStore.new('./obstore.db')
+@obstore = ObStore::FileStore.new './obstore.db'
 
-# save any object you want to persist using dot syntaxing
-@obstore.metrics = {:stat1=&gt;123, :stat2=&gt;456}
-@obstore.anything = "can be set to anything"
+# If your system supports atomic writes, you can (and should) turn that on
+@obstore.atomic_writes = true
+
+# Or alternatively when you create the obstore object
+ObStore::FileStore.new './obstore.db', :atomic_writes=&gt;true
+</code></pre>
+
+<h3>
+<a name="save-and-retrieve-objects" class="anchor" href="#save-and-retrieve-objects"><span class="octicon octicon-link"></span></a>Save and Retrieve objects</h3>
+
+<pre><code># save any object you want to persist using the save method
+# -&gt; note: the key must be a symbol or you will receive a TypeError
+@obstore.store :metrics,  {:stat1=&gt;123, :stat2=&gt;456}     # pass it a key and a value
+@obstore.store :anything, "can be any object you like"   # the key can be as simple as a string
+@obstore.store :custom,   MyCustomObject                 # the key can even be an instance of an object
 
 # retrieve the object
-metrics = @obstore.metrics.data     #=&gt; {:stat1=&gt;123, :stat2=&gt;456}
-anything = @obstore.anything.fetch  #=&gt; "can be set to anything"
+metrics  = @obstore.fetch :metrics    #=&gt; {:stat1=&gt;123, :stat2=&gt;456}
+anything = @obstore.fetch :anything   #=&gt; "can be any object you like"
+custom   = @obstore.fetch :custom     #=&gt; MyCustomObject
+</code></pre>
+
+<h2>
+<a name="more-advanced-concepts" class="anchor" href="#more-advanced-concepts"><span class="octicon octicon-link"></span></a>More Advanced Concepts</h2>
+
+<h3>
+<a name="obstore-allows-you-to-use-dot-syntaxing-to-retreive-data" class="anchor" href="#obstore-allows-you-to-use-dot-syntaxing-to-retreive-data"><span class="octicon octicon-link"></span></a>Obstore allows you to use dot syntaxing to retreive data</h3>
+
+<p>sort of like the way ActiveRecord works</p>
+
+<pre><code>@obstore.metrics.fetch  #=&gt; {:stat1=&gt;123, :stat2=&gt;456}
+
+# note - without calling fetch, you will get the underlying ObStore::Data object
+@obstore.metrics        #=&gt; ObStore::Data
 </code></pre>
 
 <h3>
@@ -87,19 +117,25 @@ anything = @obstore.anything.fetch  #=&gt; "can be set to anything"
 
 <p>ObStore will check if your data is expired and clean the db on fetch for you (lazy expiry)</p>
 
-<pre><code>@obstore.metrics = {:stat1=&gt;123, :stat2=&gt;456}, {:expiry=&gt;10} #expiry is seconds
-@obstore.metrics.data #=&gt; {:stat1=&gt;123, :stat2=&gt;456}
+<pre><code>@obstore.store :metrics, {:stat1=&gt;123, :stat2=&gt;456}, {:expiry=&gt;10} #expiry is seconds
+@obstore.fetch :metrics  #=&gt; {:stat1=&gt;123, :stat2=&gt;456}
 sleep 11
-@obstore.metrics #=&gt; nil
+@obstore.fetch :metrics #=&gt; nil
 </code></pre>
 
 <h3>
 <a name="metadata-for-your-object-dimensions" class="anchor" href="#metadata-for-your-object-dimensions"><span class="octicon octicon-link"></span></a>Metadata for your object (dimensions)</h3>
 
-<p>ObStore supports adding as much metadata as you like about the object you are saving</p>
+<p>ObStore supports adding as much metadata as you like about the object you are saving.
+That data saved to the ObStore::Data object when saved to the ObStore db</p>
 
-<pre><code>@obstore.metrics = {:stat1=&gt;123, :stat2=&gt;456}, {:expiry=&gt;10, :metadata=&gt;{:extra=&gt;"foo"}}
-@obstore.metrics.extra #=&gt; "foo"
+<pre><code>@obstore.store :metrics, {:stat1=&gt;123, :stat2=&gt;456}, {:expiry=&gt;10, :metadata=&gt;{:extra=&gt;"foo"}}
+metrics = @obstore.metrics
+metrics.extra  #=&gt; "foo"
+metrics.more = "more metadata"
+metrics.more   #=&gt; "more metadata"
+# don't forget to store you changes
+@obstore.metrics = metrics
 </code></pre>
 
 <h3>
@@ -119,6 +155,14 @@ sleep 11
 <li>add your awesome code</li>
 <li>send a pull request</li>
 <li>have a beer</li>
+</ul><h1>
+<a name="test-status" class="anchor" href="#test-status"><span class="octicon octicon-link"></span></a>Test Status</h1>
+
+<ul>
+<li>ruby-1.9.3</li>
+<li>ruby-2.0.0</li>
+<li>ruby-2.1.2</li>
+<li>jruby-1.7.11</li>
 </ul><h1>
 <a name="todo" class="anchor" href="#todo"><span class="octicon octicon-link"></span></a>TODO</h1>
 
