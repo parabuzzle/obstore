@@ -104,6 +104,12 @@ ObStore can remove all expired data at once (run this in a cronjob?)
  * send a pull request
  * have a beer
 
+# Test Status
+ * ruby-1.9.3
+ * ruby-2.0.0
+ * ruby-2.1.2
+ * jruby-1.7.11
+
 # TODO
  * Redis Support in Place of FileStore as a choice
  * Abstract Storage Provider
