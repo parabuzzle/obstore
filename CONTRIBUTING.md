@@ -21,8 +21,7 @@ The following guidelines for contribution should be followed if you want to subm
 * Check for unnecessary whitespace with `git diff --check` before committing.
 
 * Whenever possible, submit tests to your patch / new feature so it can be tested easily.
-* Assure nothing is broken by running all the tests.
-* Verify that test coverage has not dropped with `rake coverage`
+* Assure nothing is broken by running all the tests - `rake spec`
 
 ## Submit Changes
 
