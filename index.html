@@ -102,7 +102,7 @@ custom   = @obstore.fetch :custom     #=&gt; MyCustomObject
 <a name="more-advanced-concepts" class="anchor" href="#more-advanced-concepts"><span class="octicon octicon-link"></span></a>More Advanced Concepts</h2>
 
 <h3>
-<a name="obstore-allows-you-to-use-dot-syntaxing-to-retreive-data" class="anchor" href="#obstore-allows-you-to-use-dot-syntaxing-to-retreive-data"><span class="octicon octicon-link"></span></a>Obstore allows you to use dot syntaxing to retreive data</h3>
+<a name="obstore-allows-you-to-use-dot-syntaxing" class="anchor" href="#obstore-allows-you-to-use-dot-syntaxing"><span class="octicon octicon-link"></span></a>Obstore allows you to use dot syntaxing</h3>
 
 <p>sort of like the way ActiveRecord works</p>
 
@@ -134,7 +134,7 @@ metrics = @obstore.metrics
 metrics.extra  #=&gt; "foo"
 metrics.more = "more metadata"
 metrics.more   #=&gt; "more metadata"
-# don't forget to store you changes
+# don't forget to store your changes
 @obstore.metrics = metrics
 </code></pre>
 
