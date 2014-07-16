@@ -36,13 +36,13 @@ You can use ObStore to save objects to a local file for use later or by other ap
 require 'obstore'
 
 # Create an obstore object
-@obstore = ObStore::FileStore.new './obstore.db'
+@obstore = ObStore::FileStore.new :database => './obstore.db'
 
 # If your system supports atomic writes, you can (and should) turn that on
 @obstore.atomic_writes = true
 
 # Or alternatively when you create the obstore object
-ObStore::FileStore.new './obstore.db', :atomic_writes=>true
+ObStore::FileStore.new :database=> './obstore.db', :atomic_writes=>true
 ```
 ### Save and Retrieve objects
 ```
