@@ -5,7 +5,7 @@ ObStore
 
 ObStore is a smart persistent Object store.
 
-ObStore allows you to save any object to a persistent storage system (such as a file) along with metadata about that object that you can recall later using a different process or thread. You can also set an expiry for an object and ObStore will lazily delete the data for you.
+ObStore allows you to save any object to a persistent storage system (such as a file) along with metadata about that object that you can recall later using a different process or thread. You can also set an expiry for an object and ObStore will lazily delete the data for you. ObStore is thread safe and multi-process safe.
 
 # Installation
 
