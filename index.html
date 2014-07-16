@@ -74,13 +74,13 @@
 <pre><code>require 'obstore'
 
 # Create an obstore object
-@obstore = ObStore::FileStore.new './obstore.db'
+@obstore = ObStore::FileStore.new :database =&gt; './obstore.db'
 
 # If your system supports atomic writes, you can (and should) turn that on
 @obstore.atomic_writes = true
 
 # Or alternatively when you create the obstore object
-ObStore::FileStore.new './obstore.db', :atomic_writes=&gt;true
+ObStore::FileStore.new :database=&gt; './obstore.db', :atomic_writes=&gt;true
 </code></pre>
 
 <h3>
