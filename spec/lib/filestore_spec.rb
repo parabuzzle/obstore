@@ -66,6 +66,10 @@ describe ObStore::FileStore do
       expect{@obstore.store "data", "something"}.to raise_error(TypeError)
     end
 
+    it 'returns object being stored' do
+      expect(@obstore.store :data, "somedata").to eq("somedata")
+    end
+
     it 'handles any object' do
       ob = DummyObject.new
       ob.data = "foo"
@@ -88,6 +92,16 @@ describe ObStore::FileStore do
     it 'handles setting expiry' do
       @obstore.store :data, "foo", {:expiry=>300}
       expect(@obstore.data.expiry).to eq(300)
+    end
+  end
+
+  describe '#store!' do
+    before(:each) do
+      @obstore = ObStore::FileStore.new
+    end
+
+    it 'returns true when storing data' do
+      expect(@obstore.store! :data, "somedata").to eq(true)
     end
   end
 

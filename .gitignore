@@ -27,3 +27,5 @@ doc/
 .DS_Store
 .idea
 spec_results.xml
+
+*.db
