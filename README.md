@@ -1,7 +1,7 @@
 ObStore
 ===
 
-[![Build Status](https://travis-ci.org/parabuzzle/obstore.svg)](https://travis-ci.org/parabuzzle/obstore) [![Coverage Status](https://coveralls.io/repos/parabuzzle/obstore/badge.png?branch=master)](https://coveralls.io/r/parabuzzle/obstore?branch=master) [![Gem Version](https://badge.fury.io/rb/obstore.svg)](http://badge.fury.io/rb/obstore)
+[![Stories in Ready](https://badge.waffle.io/parabuzzle/obstore.png?label=ready&title=Ready)](https://waffle.io/parabuzzle/obstore) [![Coverage Status](https://coveralls.io/repos/parabuzzle/obstore/badge.png?branch=master)](https://coveralls.io/r/parabuzzle/obstore?branch=master) [![Gem Version](https://badge.fury.io/rb/obstore.svg)](http://badge.fury.io/rb/obstore) [![Build Status](https://travis-ci.org/parabuzzle/obstore.svg)](https://travis-ci.org/parabuzzle/obstore)
 
 ObStore is a smart persistent Object store.
 
