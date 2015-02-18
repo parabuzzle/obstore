@@ -41,6 +41,14 @@ module ObStore
       store_data_by_key key, value, opts
     end
 
+    # stores data to pstore db
+    def store!(key, value, opts={})
+      if key.class != Symbol
+        raise TypeError "key must be of type symbol"
+      end
+      return true if store_data_by_key key, value, opts
+    end
+
     # fetches saved object for the given key
     def fetch(key)
       if key.class != Symbol
@@ -105,6 +113,7 @@ module ObStore
         end
         @_store.commit
       end
+      return value
     end
 
     def store_obj_by_key(key, args)
